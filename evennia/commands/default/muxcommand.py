@@ -42,8 +42,12 @@ class MuxCommand(Command):
         """
         This hook is called after the command has finished executing
         (after self.func()).
-        """
-        pass
+        """    
+        caller = self.caller        
+        prompt = "HP: %i/%i  MP: %i/%i  MOVE: %i/%i" % (caller.db.hp or 0,caller.db.hp_max or 0, 
+                                          caller.db.mp or 0, caller.db.mp_max or 0,
+                                          caller.db.move or 0, caller.db.move_max or 0)
+        caller.msg(prompt=prompt)
 
     def parse(self):
         """
