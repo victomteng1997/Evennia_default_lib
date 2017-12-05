@@ -1972,8 +1972,6 @@ class DefaultExit(DefaultObject):
         This implements the actual traversal. The traverse lock has
         already been checked (in the Exit command) at this point.
 
-        ****After modification: this will deduct 10 move from the traversing object. If the 
-        move of the object is less than 10, traversing failed.
         Args:
             traversing_object (Object): Object traversing us.
             target_location (Object): Where target is going.
@@ -1982,32 +1980,15 @@ class DefaultExit(DefaultObject):
 
         """
         source_location = traversing_object.location
-        if traversing_object.db.move>10:
-            traversing_object.db.move = traversing_object.db.move - 10
-            if traversing_object.move_to(target_location):
-                self.at_after_traverse(traversing_object, source_location)
-            else:
-                if self.db.err_traverse:
-                    # if exit has a better error message, let's use it.
-                    self.caller.msg(self.db.err_traverse)
-                else:
-                    # No shorthand error message. Call hook.
-                    self.at_failed_traverse(traversing_object)
-        elif traversing_object.db.move < 20:
-            self.no_enough_move(traversing_object)
-
+        if traversing_object.move_to(target_location):
+            self.at_after_traverse(traversing_object, source_location)
         else:
-            ## this is the initial code, which is for traversing of the normal objects
-            ## including items, npcs .etc
-            if traversing_object.move_to(target_location):
-                self.at_after_traverse(traversing_object, source_location)
+            if self.db.err_traverse:
+                # if exit has a better error message, let's use it.
+                self.caller.msg(self.db.err_traverse)
             else:
-                if self.db.err_traverse:
-                    # if exit has a better error message, let's use it.
-                    self.caller.msg(self.db.err_traverse)
-                else:
-                    # No shorthand error message. Call hook.
-                    self.at_failed_traverse(traversing_object)
+                # No shorthand error message. Call hook.
+                self.at_failed_traverse(traversing_object)
 
     def at_failed_traverse(self, traversing_object, **kwargs):
         """
@@ -2025,6 +2006,3 @@ class DefaultExit(DefaultObject):
 
         """
         traversing_object.msg("You cannot go there.")
-    def no_enough_move(self,traversing_object,**kwargs):
-
-        traversing_object.msg("You have no enough move point to move!")
